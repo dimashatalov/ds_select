@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Default html</title>
+
+<link rel="icon" type="image/png" href="favico.png" />
+</head>
+<body>
+<h1>Default html</h1>
+<p>This is default html page</p>
+
+
+<div id="test">Input goes here</div>
+
+
+<script src="dist/ds-select.js?t=2"></script>
+
+
+
+<script>
+let select = new DS_Select.default({
+    "name" : "test",
+    "options_length" : 5,
+    "options" : [
+        {
+            "value" :  1,
+            "searchable" : "Dmytro Shatalov",
+            "label" : "<div class='adadad'><b>Dmytro Shatalov</b></div>",
+            "selectedLabel" : "Dmytro"
+        },
+        {
+            "value" :  2,
+            "searchable" : "Roma Shatalov",
+            "label" : "Roma Shatalov"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Daniel",
+            "label" : "Daniel"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Another value",
+            "label" : "another value"
+        },
+        {
+            "value" :  2,
+            "searchable" : "Roma Shatalov",
+            "label" : "Roma Shatalov"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Daniel",
+            "label" : "Daniel"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Another value",
+            "label" : "another value"
+        },
+        {
+            "value" :  2,
+            "searchable" : "Roma Shatalov",
+            "label" : "Roma Shatalov"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Daniel",
+            "label" : "Daniel"
+        },
+        {
+            "value" :  3,
+            "searchable" : "Another value",
+            "label" : "another value"
+        }                      
+    ]        
+});
+
+
+document.getElementById("test").appendChild(select.node);
+</script>
+
+</body>
+</html>

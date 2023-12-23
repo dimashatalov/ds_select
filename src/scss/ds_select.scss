@@ -1,0 +1,72 @@
+.ds_select__wrapper {
+    position: relative;
+}
+
+.ds_select__input{
+    box-sizing:border-box;
+    font-size:14px; 
+    width:100%; 
+    border:none;
+
+    &:focus {
+        border:none;
+        outline: none;
+
+    }
+
+}
+
+.ds_select__input-container {
+    position: relative;
+
+    box-sizing: border-box;
+    border:1px solid #3a3a3a;
+    padding:8px 8px;
+
+    margin:16px 0;
+
+
+    &:focus-within {
+        // Styles for the parent when .ds_select__input is focused
+        // For example, you can add a border or change background color
+        border: 1px solid rgb(0, 119, 255);
+    }    
+
+}
+
+.ds_select__options-container {
+
+    display: none;
+
+    position: absolute;
+
+    border:1px solid #3a3a3a;
+
+    width:100%;
+
+    max-height: 400px;
+
+    overflow-y:auto;
+
+    box-sizing: border-box;
+
+    margin-top:-8px;
+}
+
+.focus .ds_select__options-container {
+    display: block;
+}
+
+.ds_select__options-list {
+
+}
+
+.ds_select__option  {
+    padding: 12px 16px;
+
+    cursor: pointer;
+
+    &:hover {
+        background-color: #ebebeb;
+    }
+}
