@@ -70,11 +70,14 @@ export default class DS_Select {
             
 
             setTimeout(function(){
-                console.log('self.get("blur")',self.get("blur"));
 
                 if (self.get("blur") === true) {
                     self.node.classList.remove("focus");
                     self.set("blur", true);
+                    
+                    if (self.get("onBlur")) {
+                        self.get("onBlue")(self);
+                    }
                 }
 
                 self.set("blur", true);
@@ -89,14 +92,18 @@ export default class DS_Select {
             if (container) {
                 self.node.classList.add("focus");
                 self.set("blur", false);
+                if (self.get("onFocus")) {
+                    self.get("onFocus")(self);
+                }
             }
 
             let option = e.target.closest(".ds_select__option");
 
             if (option) {
                 self.selectOption(option);
-
-                self.optionClicked();
+                if (self.get("onSelect")) {
+                    self.get("onSelect")(self, option);
+                }
             }
              
         });

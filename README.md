@@ -7,6 +7,38 @@
 
     document.getElementById("test").appendChild(select.node);
 
+## Init Example 2
+    <script>
+    let select = new DS_Select.default({
+        "name" : "test",
+        "options_length" : 5,
+        "options" : [
+            {
+                "value" :  1,
+                "searchable" : "Dmytro Shatalov",
+                "label" : "<div class='adadad'><b>Dmytro Shatalov</b></div>",
+                "selectedLabel" : "Dmytro"
+            },
+            {
+                "value" :  2,
+                "searchable" : "Roma Shatalov",
+                "label" : "Roma Shatalov"
+            }                   
+        ],
+
+    });
+
+
+    document.getElementById("test").appendChild(select.node);
+    </script>
+
+
+## Events
+
+onBlur(this)
+onFocus(this)
+onSelect(this, option)
+
 ## Default settings you can override
 ### allow_input_value
     Default value is "true"
