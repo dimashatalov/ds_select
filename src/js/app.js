@@ -76,7 +76,7 @@ export default class DS_Select {
                     self.set("blur", true);
                     
                     if (self.get("onBlur")) {
-                        self.get("onBlue")(self);
+                        self.get("onBlur")(self);
                     }
                 }
 
@@ -160,6 +160,7 @@ export default class DS_Select {
 
         let html = [];
 
+        let optionsCount = 0;
         for (let i in options) {
             let option = options[i];
 
@@ -197,11 +198,22 @@ export default class DS_Select {
                     ` + label + `
                 </div>
             `);
+
+            optionsCount++;
         }
 
         html = `<div class="ds_select__options-list">` + html.join("") + '</div>';
 
         this.get("options_container").innerHTML = html;
+
+        console.log("optionsCount", optionsCount);
+        
+        if (optionsCount == 0) {
+            this.get("options_container").classList.add("empty");
+        }
+        else {
+            this.get("options_container").classList.remove("empty");
+        }
 
 
         
