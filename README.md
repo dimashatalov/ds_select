@@ -15,13 +15,13 @@
         "options" : [
             {
                 "value" :  1,
-                "searchable" : "Dmytro Shatalov",
+                "searchValue" : "Dmytro Shatalov",
                 "label" : "<div class='adadad'><b>Dmytro Shatalov</b></div>",
                 "selectedLabel" : "Dmytro"
             },
             {
                 "value" :  2,
-                "searchable" : "Roma Shatalov",
+                "searchValue" : "Roma Shatalov",
                 "label" : "Roma Shatalov"
             }                   
         ],
