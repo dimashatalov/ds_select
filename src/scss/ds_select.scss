@@ -1,7 +1,201 @@
-.ds_select__wrapper {
-    position: relative;
+.ds_select_container  {
+
+    --borderColor: #474747;
+    --optionsBorderColor: #474747;
+
+    --selectorTextColor     : #303030;
+    --placeholderTextColor  : #525252;
+
+    --svgColor : #474747; 
+
+    --borderRadius : 5px;
+
+    --backgroundColor : #fff;
+    --backgroundColor2 : #f9f9f9;
+    --optionHoverBackgroundColor : #f1f1f1;
+
+    --disableBackground: rgb(238, 238, 238);
+    --loadingBackground: rgb(238, 238, 238);
+    --loadingBackground2: rgb(207, 207, 207);
+    
+    --loadingTextColor:#919191;
+    --disableTextColor:#919191;
+
+    --padding : 16px;
+    --optionPadding : 8px 16px;
+    --fontSize : 16px;
+
+    cursor: pointer;
+ 
+    &.ds_select__disable {
+        pointer-events: none;
+        cursor: default;
+
+        .ds_select__selector {
+            color:var(--disableTextColor);
+        }
+
+        .ds_select__input-container {
+            background-color: var(--disableBackground);
+        }        
+    }
+
+    &.ds_select__loading {
+        pointer-events: none;
+        cursor: default;
+
+        
+        .ds_select__selector {
+            color:var(--loadingTextColor);
+        }
+
+        .ds_select__input-container {
+            animation: ds_select_pulse 5s infinite; 
+        }
+    }    
 }
 
+@keyframes ds_select_pulse {
+    0% {
+        background-color: var(--loadingBackground);   
+    }
+    50% {
+        background-color: var(--loadingBackground2,--loadingBackground);   
+    }
+    100% {
+        background-color: var(--loadingBackground);   
+    }
+  }
+
+@keyframes ds_select_pulse_loading_results {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }   
+}
+
+.ds_select__wrapper {
+    position: relative;
+
+}
+
+.ds_select__input-container {
+    position: relative;
+
+    border: 1px solid var(--borderColor);
+    border-radius: var(--borderRadius);
+    background-color: var(--backgroundColor);
+
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.ds_select__placeholder {
+    .ds_select__selector {
+        color:var(--placeholderTextColor);
+    }
+}
+
+
+.ds_select__selector {
+    color:var(--selectorTextColor);
+    padding: var(--padding);
+    min-height:50px;
+    line-height: 1;
+    font-size: var(--fontSize);
+    box-sizing: border-box;
+}
+
+input.ds_select__selector {
+    border:none;
+    display: block;
+    width: 100%;
+    border-color:transparent;
+}
+
+.ds_select__select-icon {
+    position: absolute;
+
+    right : var(--padding);
+    top:50%;
+    transform: translateY(-50%);
+
+    width: 14px; height: 14px;
+    fill:var(--svgColor);
+}
+
+.ds_select__options-container {
+
+    display: none;
+    
+    position: absolute;
+
+    border:1px solid var(--optionsBorderColor);
+    border-radius: var(--borderRadius);
+    background-color: var(--backgroundColor);
+
+    width:100%;
+    overflow-y:auto;
+
+    box-sizing: border-box;
+
+    margin-top:8px;  
+
+    z-index: 3;
+
+}
+
+
+.ds_select__focus {
+    .ds_select__options-container {
+        display: block;
+    }
+}
+
+.ds_select__option-wrapper {
+    padding: var(--optionPadding);
+    font-size: var(--fontSize);
+
+    cursor: pointer;
+
+
+    &:nth-child(even) {
+        background-color: var(--backgroundColor2);
+        &:hover {
+            background-color: var(--optionHoverBackgroundColor);
+        }      
+    }
+
+    
+}
+
+.ds_select__no-results {
+    padding: var(--optionPadding);
+    font-size: var(--fontSize);
+    font-style: italic;
+}
+
+.ds_select__loading-results {
+    padding: var(--optionPadding);
+    font-size: var(--fontSize);
+    font-style: italic;
+    
+    animation: ds_select_pulse_loading_results 2s infinite; 
+}
+
+.ds_select__option-wrapper {
+
+    &:hover,
+    &--focus {
+        background-color: var(--optionHoverBackgroundColor) !important;
+    }    
+}
+/*
 .ds_select__input{
     box-sizing:border-box;
     font-size:14px; 
@@ -75,4 +269,4 @@
     &:hover {
         background-color: #ebebeb;
     }
-}
+}*/

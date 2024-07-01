@@ -2,22 +2,26 @@ import Class  from "./class.js";
 import Option from "./option.js";
 
 export default class Options extends Class {
-    constructor(app,settings) {
-        super(settings);
+    constructor(App) {
+        super();
+        this.App        = App;
+        this.Template   = App.Template;
+        this.setDefault();
 
-        this.app = app;
+        this.lastFocus = -1;
     }
     
 
     setOptions(data) {
         
+        
         this.options = [];
 
         if (data == false || data.length == 0) {
-            this.app.template.get("options_container").classList.add("empty");
+            this.Template.get("container").classList.add("ds_select__no-options");
         }
         else {
-            this.app.template.get("options_container").classList.remove("empty");
+            this.Template.get("container").classList.remove("ds_select__no-options");
         }
 
         for (let i in data) {
@@ -25,36 +29,47 @@ export default class Options extends Class {
         }    
 
         this.draw();
+
+        if (this.App.get("type") != "external_autocomplete") {
+            this.setDefault();
+        }
     }
 
     setDefault() {
 
-        let def         = false;
-        let placeholder = false;
+        let defaultOption     = false;
+        let placeHolderOption = this.get("placeHolderOption");
+
 
         for (let i in this.options) {
             let option = this.options[i];
 
             if (typeof option.data.default != "undefined" && option.data.default == true) {
-                def = option;
+                defaultOption = option;
             }
-
+            else
             if (typeof option.data.value == "") {
-                placeholder = option;
+                defaultOption = option;
             }            
         }
 
+ 
+
     
-        if (def != false) {
-            def.onClick();
+        if (defaultOption != false) {
+            defaultOption.onClick();
         }
         else 
-        if (placeholder != false) {
-            placeholder.onClick();
+        if (defaultOption != false) {
+            defaultOption.onClick();
+        }
+        else
+        if (placeHolderOption != false) {
+            console.log("placeHolderOption",placeHolderOption);
+            placeHolderOption.pick();
         }
         else {
-            // Just empty
-            this.app.template.reset();
+            this.Template.reset();
         }
 
     }
@@ -62,11 +77,26 @@ export default class Options extends Class {
 
     search() {
 
-        let searchString = this.app.template.get("selector").value;
+        if (this.Template.get("selector").tagName.toLowerCase() == "div") {
+            var searchString = this.Template.get("selector").innerHTML;
+        }
+        else {
+            var searchString = this.Template.get("selector").value;
+        }
 
-        console.log("searchString", searchString, this.options);
+        if (this.App.getValue() == "") {
+            searchString = '';  // Might be placeholder
+        }
 
-        if (searchString == "" ||  (this.app.get("type") != "autocomplete" &&  this.app.get("type") != "suggest"))  {
+        if (this.App.get("type") == "select") {
+            
+            return this.options;
+        }
+         
+
+        console.log("searchString 2", searchString, this.options);
+
+        if (searchString == "" ||  (this.App.get("type") != "autocomplete" &&  this.App.get("type") != "suggest"))  {
             return this.options;
         }
 
@@ -74,7 +104,7 @@ export default class Options extends Class {
         for (let i in this.options) {
             let option = this.options[i];
             
-            let score = this.isMatch(option.data.value, searchString);
+            let score = this.isMatch(option.data.search, searchString);
 
             found.push({
                 option : option,
@@ -116,6 +146,35 @@ export default class Options extends Class {
         return score;
     }
 
+    pickByValue() {
+        let placeHolderOption = this.get("placeHolderOption");
+
+        
+        for (let i = 0; i < this.options.length; i++) {
+            let option = this.options[i];
+
+            if (option.data.value == this.App.get("value")) {
+                option.pick();
+                return true;
+            }
+        }
+
+
+        if (placeHolderOption != false) {
+            placeHolderOption.pick();
+        }        
+        
+
+    }
+
+    drawLoading() {
+        this.Template.get("options_container").innerHTML = '';
+        let html__noResults = document.createElement("div");
+        html__noResults.classList.add("ds_select__loading-results");
+        html__noResults.innerHTML = '<div>' + this.App.get("loading_results_message")+ '</div>';
+        this.Template.get("options_container").appendChild(html__noResults);        
+    }
+    
     draw() {
 
         try {
@@ -123,9 +182,9 @@ export default class Options extends Class {
 
             let count = 0;
  
-            this.app.template.get("options_container").innerHTML = '';
+            this.Template.get("options_container").innerHTML = '';
             
-            if (this.app.get("externalAutocomplete") == true) { 
+            if (this.App.get("externalAutocomplete") == true) { 
                 var foundOptions = this.options;
             }
             else {
@@ -133,96 +192,135 @@ export default class Options extends Class {
             }
 
             if (typeof foundOptions == "undefined" || foundOptions == false || foundOptions.length == 0) {
-                this.app.template.get("options_container").classList.add("empty");
+                this.App.Template.get("container").classList.add("ds_select__no-options");
             }
             else {
-                this.app.template.get("options_container").classList.remove("empty");
-            }            
+                this.App.Template.get("container").classList.remove("ds_select__no-options");
+            }  
+            
+            this.drawPlaceHolder();
 
+            
             for (let i in foundOptions) {
                 
                 let option = foundOptions[i];
 
-                if (count >= this.app.get("options_length")) {
+                if (count >= this.App.get("options_length")) {
                     break;
                 }
 
-                this.app.template.get("options_container").appendChild(option.data.node);
+                this.Template.get("options_container").appendChild(option.data.container);
                 count++;
+            }
+
+            if (count == 0) {
+                this.noResults();
             }
         }
         catch(e) {
-            console.log(e);
+            console.log("draw error", e);
         }
-        /*
-        var self = this;
-
-        let options = this.get("options");
-
-		let str = this.get("input").value;
-		let input_regexp = new RegExp(str.replace(/\s+/, '|'));
-
-        this.autoSelect();
-
-        let html = [];
-
-        let optionsCount = 0;
-        for (let i in options) {
-            let option = options[i];
-
-            str = option.value;
-
-            if (typeof option.searchable != "undefined") {
-                str = option.searchable;
-            }
-
-            if (str.search(input_regexp) != -1) {
-
-            }
-            else {
-				continue;
-            }
-
-            if (i >= this.get("options_length")-1) {
-                break;
-            }
-
-            let label = option.value;
-
-            if (typeof option.label != "undefined") {
-                label = option.label;
-            }
-
-            let classState = '';
-
-            if (option.value == this.get("hidden_input").value) {
-                classState = " selected ";
-            }
-
-            html.push(`
-                <div class="ds_select__option `+classState+`" data-value="`+option.value+`">
-                    ` + label + `
-                </div>
-            `);
-
-            optionsCount++;
-        }
-
-        html = `<div class="ds_select__options-list">` + html.join("") + '</div>';
-
-        this.get("options_container").innerHTML = html;
-
-        console.log("optionsCount", optionsCount);
-
-        if (optionsCount == 0) {
-            this.get("options_container").classList.add("empty");
-        }
-        else {
-            this.get("options_container").classList.remove("empty");
-        }
-        */
-
     }
 
+    noResults() {
+
+        let html__noResults = document.createElement("div");
+        html__noResults.classList.add("ds_select__no-results");
+        html__noResults.innerHTML = '<div>' + this.App.get("no_results_message")+ '</div>';
+        this.Template.get("options_container").appendChild(html__noResults);
+    }
+
+    focusOnOption(direction) {
+        
+        if (direction == "next")
+            this.lastFocus++;
+        else {
+            this.lastFocus--;
+        }
+
+        if (this.lastFocus < 0) 
+            this.lastFocus = 0;
+
+        console.log("lastFocus", this.lastFocus);
+
+        let nodes = this.Template.container.querySelectorAll(".ds_select__option-wrapper");
+        
+        this.removeFocus();
+        
+        if (this.lastFocus > nodes.length-1) {
+            this.lastFocus = 0;
+        }
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (i == this.lastFocus) {
+                nodes[i].classList.add("ds_select__option-wrapper--focus");
+            }
+        }
+    }
+
+    pickFocused() {
+        let placeHolderOption = this.get("placeHolderOption");
+
+        if (placeHolderOption != false && placeHolderOption.isFocused() == true) {
+            placeHolderOption.pick();
+        }
+        else {
+            for (let i = 0; i < this.options.length; i++) {
+                let option = this.options[i];
+
+                if (option.isFocused()) {
+                    option.pick();
+                }
+            }
+        }
+    }
+
+    removeFocus() {
+        let placeHolderOption = this.get("placeHolderOption");
+
+        if (placeHolderOption != false) {
+            placeHolderOption.unFocus()
+        }
+        
+            for (let i = 0; i < this.options.length; i++) {
+                let option = this.options[i];
+
+                option.unFocus();
+                 
+            }
+        
+    }
+
+    drawPlaceHolder() {
+        let placeHolderOption = this.get("placeHolderOption");
+
+        if (placeHolderOption === false) {
+            // Create placeholder
+            let placeholder = this.App.get("placeholder");
+
+            if (placeholder == false) {
+                return false;
+            }
+
+            if (typeof placeholder == "string") {
+                placeholder = {
+                    value : "",
+                    label : placeholder,
+                };
+            }
+
+            placeholder.type    = "placeholder";
+            placeholder.default = true;
+
+            placeHolderOption = new Option(this, placeholder);
+            
+        }
+
+        this.set("placeHolderOption", placeHolderOption);
+        
+        this.Template.get("options_container").appendChild(placeHolderOption.data.container);
+        
+        
+    }
 
 }   

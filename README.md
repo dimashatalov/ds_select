@@ -1,5 +1,15 @@
 # ds_select
 
+## Settings
+    editableDiv : true
+    This use div instead input. Usefull to eliminate autocomplete feature. 
+
+    type : select | autocomplete
+
+    template_before : <html>
+    template_after  : <html>
+    template_select_icon : <html>
+
 ## Init
     let select = new DS_Select.default({
         "name" : "test"

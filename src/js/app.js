@@ -9,25 +9,19 @@ export default class DS_Select {
     constructor(settings) {
         this.args = [];
 
-        this.drawOptionsTM = false;
-
-        this.applyDefaultSettings();
+        this.applyDefaultSettings();        
         this.applyCustomSettings(settings);
+        this.applySettingsFromTarget();
 
-        this.template = new Template(this,settings);
+        this.Template   = new Template(this);
+        this.Options    = new Options(this);
+        this.Events     = new Events(this);
+        
+        this.Options.setOptions(this.get("options"));
+        
 
 
-        this.set("type", this.template.get("input").getAttribute("data-type"));
-
-        this.options  = new Options(this,settings);
-
-
-        this.legacySupport();
-
-        this.Events = new Events(this,settings);
-
-     
-        //this.drawOptions(); 
+        this.Options.pickByValue();
     }
 
 
@@ -36,9 +30,28 @@ export default class DS_Select {
         this.set("blur", true);
         this.set('options_length', 20);
         this.set("allow_input_value", true);
+        this.set("type", "select");
+        this.set("no_results_message", "No results");
+        this.set("loading_options", true);
+        this.set("loading_results_message", "Loading options");
+    }
+
+    applySettingsFromTarget() {
+        let object = this.get("target");
+
+        if (object.getAttribute("data-name")) {
+            this.set("name", object.getAttribute("data-name"));
+        }
+
+        if (object.getAttribute("data-placeholder")) {
+            this.set("placeholder", object.getAttribute("data-placeholder"));
+        }
     }
 
 
+    setOptions(options) {
+        this.Options.setOptions(options);
+    }
  
     reset() {
         this.options.setDefault();
@@ -52,28 +65,52 @@ export default class DS_Select {
         this.template.node.classList.add("disable");
     }
 
+
+    setState(state) {
+        if (state == "loading") {
+            this.setLoadingState();
+        }
+        else 
+        if (state == "default") {
+            this.setDefaultState();
+        }
+        else 
+        if (state == "disable") {
+            this.setDisableState();
+        }        
+    }
+
+    setLoadingState() {
+        this.setDefaultState();
+
+        this.Template.container.classList.add("ds_select__loading");
+        this.Template.get("selector").innerHTML = "Loading";
+        this.Template.get("selector").value = "Loading";
+    }
+
+    setDisableState() {
+        this.setDefaultState();
+        this.Template.container.classList.add("ds_select__disable");
+    }
+
+    setDefaultState() {
+        let states = ["loading", "disable"];
+
+        for (let i in states) {
+            this.Template.container.classList.remove("ds_select__" + states[i]);
+        }
+
+        this.Options.setDefault();
+    }
+
     getValue() {
-        return this.template.get("input").value;
+        return this.Template.get("hidden_input").value;
     }
 
 
     setValue(value) {
-        
-        let selectorValue = '';
-
-        if (typeof value == "array") {
-            this.template.get("input").value = value[0];
-            selectorValue = value[1];
-        }
-        else {
-            this.template.get("input").value = value;
-            selectorValue = value;
-        }
-
-        if (this.template.get("selector")) {
-            this.template.get("selector").value = selectorValue;
-            this.template.get("selector").innerHTML = selectorValue;
-        }
+        this.set("value", value);
+        this.Options.pickByValue();
     }
 
     select(obj) {
@@ -97,12 +134,6 @@ export default class DS_Select {
         
     }
 
-
-    legacySupport() {
-        this.set("input", this.template.get("input"));
-        this.node = this.template.node;
-        this.setOptions = this.options.setOptions;
-    }
 
     set(k, v) {
         this.args[k] = v;
